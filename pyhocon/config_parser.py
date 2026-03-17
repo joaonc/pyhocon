@@ -41,19 +41,19 @@ logger = logging.getLogger(__name__)
 #
 
 
-class DEFAULT_SUBSTITUTION(object):
+class DEFAULT_SUBSTITUTION:
     pass
 
 
-class MANDATORY_SUBSTITUTION(object):
+class MANDATORY_SUBSTITUTION:
     pass
 
 
-class NO_SUBSTITUTION(object):
+class NO_SUBSTITUTION:
     pass
 
 
-class STR_SUBSTITUTION(object):
+class STR_SUBSTITUTION:
     pass
 
 
@@ -61,16 +61,16 @@ U_KEY_SEP = '.'
 U_KEY_FMT = '"{0}"'
 
 
-class ConfigFactory(object):
+class ConfigFactory:
 
     @classmethod
     def parse_file(cls, filename, encoding='utf-8', required=True, resolve=True, unresolved_value=DEFAULT_SUBSTITUTION):
         """Parse file
 
         :param filename: filename
-        :type filename: basestring
+        :type filename: str
         :param encoding: file encoding
-        :type encoding: basestring
+        :type encoding: str
         :param required: If true, raises an exception if can't load file
         :type required: boolean
         :param resolve: if true, resolve substitutions
@@ -97,7 +97,7 @@ class ConfigFactory(object):
         """Parse URL
 
         :param url: url to parse
-        :type url: basestring
+        :type url: str
         :param resolve: if true, resolve substitutions
         :type resolve: boolean
         :param unresolved_value: assigned value to unresolved substitution.
@@ -125,7 +125,7 @@ class ConfigFactory(object):
         """Parse string
 
         :param content: content to parse
-        :type content: basestring
+        :type content: str
         :param resolve: if true, resolve substitutions
         :type resolve: boolean
         :param unresolved_value: assigned value to unresolved substitution.
@@ -160,7 +160,7 @@ class ConfigFactory(object):
         return create_tree(dictionary)
 
 
-class ConfigParser(object):
+class ConfigParser:
     """
     Parse HOCON files: https://github.com/typesafehub/config/blob/master/HOCON.md
     """
@@ -182,7 +182,7 @@ class ConfigParser(object):
         """parse a HOCON content
 
         :param content: HOCON content to parse
-        :type content: basestring
+        :type content: str
         :param resolve: if true, resolve substitutions
         :type resolve: boolean
         :param unresolved_value: assigned value to unresolved substitution.
@@ -329,9 +329,9 @@ class ConfigParser(object):
 
         with set_default_white_spaces():
             assign_expr = Forward()
-            true_expr = Keyword("true", caseless=True).set_parse_action(replace_with(True))
-            false_expr = Keyword("false", caseless=True).set_parse_action(replace_with(False))
-            null_expr = Keyword("null", caseless=True).set_parse_action(replace_with(NoneValue()))
+            true_expr = Keyword('true', caseless=True).set_parse_action(replace_with(True))
+            false_expr = Keyword('false', caseless=True).set_parse_action(replace_with(False))
+            null_expr = Keyword('null', caseless=True).set_parse_action(replace_with(NoneValue()))
             key = QuotedString('"""', esc_char='\\', unquote_results=False) | \
                   QuotedString('"', esc_char='\\', unquote_results=False) | Word(alphanums + alphas8bit + '._- /')
 
@@ -364,9 +364,9 @@ class ConfigParser(object):
                 '(').suppress() - quoted_string - Literal(')').suppress())
             )
             include_expr = (
-                    Keyword("include", caseless=True).suppress() + (
+                    Keyword('include', caseless=True).suppress() + (
                     include_content | (
-                    Keyword("required") - Literal('(').suppress() - include_content - Literal(')').suppress()
+                    Keyword('required') - Literal('(').suppress() - include_content - Literal(')').suppress()
             )
             )
             ).set_parse_action(include_config)
@@ -489,7 +489,7 @@ class ConfigParser(object):
         """Convert HOCON input into a JSON output
 
         :return: JSON string representation
-        :type return: basestring
+        :type return: str
         """
         if isinstance(item, ConfigValues):
             return item.get_substitutions()

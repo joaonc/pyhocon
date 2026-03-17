@@ -16,13 +16,13 @@ except ImportError:
     relativedelta = None
 
 
-class HOCONConverter(object):
+class HOCONConverter:
     @classmethod
     def to_json(cls, config, compact=False, indent=2, level=0):
         """Convert HOCON input into a JSON output
 
         :return: JSON string representation
-        :type return: basestring
+        :type return: str
         """
         lines = ""
         if isinstance(config, ConfigTree):
@@ -73,7 +73,7 @@ class HOCONConverter(object):
         """Convert HOCON input into a HOCON output
 
         :return: JSON string representation
-        :type return: basestring
+        :type return: str
         """
         lines = ""
         if isinstance(config, ConfigTree):
@@ -148,7 +148,7 @@ class HOCONConverter(object):
         """Convert HOCON input into a YAML output
 
         :return: YAML string representation
-        :type return: basestring
+        :type return: str
         """
         lines = ""
         if isinstance(config, ConfigTree):
@@ -198,7 +198,7 @@ class HOCONConverter(object):
         """Convert HOCON input into a .properties output
 
         :return: .properties string representation
-        :type return: basestring
+        :type return: str
         :return:
         """
         key_stack = key_stack or []

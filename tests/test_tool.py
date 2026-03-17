@@ -5,8 +5,8 @@ from pyhocon import ConfigFactory
 from pyhocon.converter import HOCONConverter
 
 
-class TestHOCONConverter(object):
-    CONFIG_STRING = u"""
+class TestHOCONConverter:
+    CONFIG_STRING = """
             a = {b: 1}
             b = [1, 2]
             c = 1

@@ -6,7 +6,7 @@ from pyhocon.config_parser import ConfigFactory
 from pyhocon.tool import HOCONConverter
 
 
-class TestConfigTree(object):
+class TestConfigTree:
 
     def test_config_tree_quoted_string(self):
         config_tree = ConfigTree()

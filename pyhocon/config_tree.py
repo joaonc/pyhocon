@@ -4,15 +4,15 @@ import copy
 from pyhocon.exceptions import ConfigException, ConfigWrongTypeException, ConfigMissingException
 
 
-class UndefinedKey(object):
+class UndefinedKey:
     pass
 
 
-class NonExistentKey(object):
+class NonExistentKey:
     pass
 
 
-class NoneValue(object):
+class NoneValue:
     pass
 
 
@@ -130,7 +130,7 @@ class ConfigTree(dict):
 
                 else:
                     raise ConfigWrongTypeException(
-                        u"Cannot concatenate the list {key}: {value} to {prev_value} of {type}".format(
+                        'Cannot concatenate the list {key}: {value} to {prev_value} of {type}'.format(
                             key='.'.join(key_path),
                             value=value,
                             prev_value=l_value,
@@ -167,7 +167,7 @@ class ConfigTree(dict):
         if elt is UndefinedKey:
             if default is UndefinedKey:
                 raise ConfigMissingException(
-                    u"No configuration setting found for key {key}".format(key='.'.join(key_path[:key_index + 1])))
+                    'No configuration setting found for key {key}'.format(key='.'.join(key_path[:key_index + 1])))
             else:
                 return default
 
@@ -183,7 +183,7 @@ class ConfigTree(dict):
         else:
             if default is UndefinedKey:
                 raise ConfigWrongTypeException(
-                    u"{key} has type {type} rather than dict".format(key='.'.join(key_path[:key_index + 1]),
+                    '{key} has type {type} rather than dict'.format(key='.'.join(key_path[:key_index + 1]),
                                                                      type=type(elt).__name__))
             else:
                 return default
@@ -212,7 +212,7 @@ class ConfigTree(dict):
         """Put a value in the tree (dot separated)
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param value: value to put
         """
         self._put(ConfigTree.parse_key(key), value, append)
@@ -221,7 +221,7 @@ class ConfigTree(dict):
         """Get a value from the tree
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: object
         :return: value in the tree located at key
@@ -232,11 +232,11 @@ class ConfigTree(dict):
         """Return string representation of value found at key
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
-        :type default: basestring
+        :type default: str
         :return: string value
-        :type return: basestring
+        :type return: str
         """
         value = self.get(key, default)
         if value is None:
@@ -255,7 +255,7 @@ class ConfigTree(dict):
         and pops the last value out of the dict.
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: object
         :param default: default value if key not found
@@ -279,7 +279,7 @@ class ConfigTree(dict):
         """Return int representation of value found at key
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: int
         :return: int value
@@ -290,13 +290,13 @@ class ConfigTree(dict):
             return int(value) if value is not None else None
         except (TypeError, ValueError):
             raise ConfigException(
-                u"{key} has type '{type}' rather than 'int'".format(key=key, type=type(value).__name__))
+                '{key} has type \'{type}\' rather than \'int\''.format(key=key, type=type(value).__name__))
 
     def get_float(self, key, default=UndefinedKey):
         """Return float representation of value found at key
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: float
         :return: float value
@@ -307,13 +307,13 @@ class ConfigTree(dict):
             return float(value) if value is not None else None
         except (TypeError, ValueError):
             raise ConfigException(
-                u"{key} has type '{type}' rather than 'float'".format(key=key, type=type(value).__name__))
+                '{key} has type \'{type}\' rather than \'float\''.format(key=key, type=type(value).__name__))
 
     def get_bool(self, key, default=UndefinedKey):
         """Return boolean representation of value found at key
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: bool
         :return: boolean value
@@ -334,13 +334,13 @@ class ConfigTree(dict):
             return bool_conversions[string_value]
         except KeyError:
             raise ConfigException(
-                u"{key} does not translate to a Boolean value".format(key=key))
+                '{key} does not translate to a Boolean value'.format(key=key))
 
     def get_list(self, key, default=UndefinedKey):
         """Return list representation of value found at key
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: list
         :return: list value
@@ -355,19 +355,19 @@ class ConfigTree(dict):
                 if re.match('^[1-9][0-9]*$|0', k):
                     lst.append(v)
                 else:
-                    raise ConfigException(u"{key} does not translate to a list".format(key=key))
+                    raise ConfigException('{key} does not translate to a list'.format(key=key))
             return lst
         elif value is None:
             return None
         else:
             raise ConfigException(
-                u"{key} has type '{type}' rather than 'list'".format(key=key, type=type(value).__name__))
+                '{key} has type \'{type}\' rather than \'list\''.format(key=key, type=type(value).__name__))
 
     def get_config(self, key, default=UndefinedKey):
         """Return tree config representation of value found at key
 
         :param key: key to use (dot separated). E.g., a.b.c
-        :type key: basestring
+        :type key: str
         :param default: default value if key not found
         :type default: config
         :return: config value
@@ -380,7 +380,7 @@ class ConfigTree(dict):
             return None
         else:
             raise ConfigException(
-                u"{key} has type '{type}' rather than 'config'".format(key=key, type=type(value).__name__))
+                '{key} has type \'{type}\' rather than \'config\''.format(key=key, type=type(value).__name__))
 
     def __getitem__(self, item):
         val = self.get(item)
@@ -461,12 +461,12 @@ class ConfigList(list):
                 value.key = index
 
 
-class ConfigInclude(object):
+class ConfigInclude:
     def __init__(self, tokens):
         self.tokens = tokens
 
 
-class ConfigValues(object):
+class ConfigValues:
     def __init__(self, tokens, instring, loc):
         self.tokens = tokens
         self.parent = None
@@ -597,7 +597,7 @@ class ConfigValues(object):
         return '[ConfigValues: ' + ','.join(str(o) for o in self.tokens) + ']'
 
 
-class ConfigSubstitution(object):
+class ConfigSubstitution:
     def __init__(self, variable, optional, ws, instring, loc):
         self.variable = variable
         self.optional = optional
@@ -619,7 +619,7 @@ class ConfigUnquotedString(str):
         return super(ConfigUnquotedString, cls).__new__(cls, value)
 
 
-class ConfigQuotedString(object):
+class ConfigQuotedString:
     def __init__(self, value, ws, instring, loc):
         self.value = value
         self.ws = ws

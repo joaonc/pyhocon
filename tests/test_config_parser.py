@@ -23,7 +23,7 @@ try:
 except ImportError:
     from datetime import timedelta as period
 
-class TestConfigParser(object):
+class TestConfigParser:
     def test_parse_simple_value(self):
         config = ConfigFactory.parse_string(
             """t = {
@@ -457,7 +457,7 @@ class TestConfigParser(object):
         assert config2.get('f') == 'test  str      '
 
         config3 = ConfigFactory.parse_string(
-            u"""
+            """
             {
                 a: {
                     b: {
@@ -1795,7 +1795,7 @@ class TestConfigParser(object):
             """
         )
 
-        # on python 3 long will be an int but on python 2 long with be a long
+        # Python 3 stores arbitrarily large integers as int.
         assert config['short'] == 12
         assert isinstance(config['short'], int)
         assert config['long'] == 12321321837612378126213217321
@@ -1812,7 +1812,7 @@ class TestConfigParser(object):
             """
         )
 
-        # on python 3 long will be an int but on python 2 long with be a long
+        # Python 3 stores arbitrarily large integers as int.
         assert config['a'] == 121.22
         assert config['b'] == -121.22
         assert config['c'] == .54
@@ -1833,7 +1833,7 @@ class TestConfigParser(object):
             """
         )
 
-        # on python 3 long will be an int but on python 2 long with be a long
+        # Python 3 stores arbitrarily large integers as int.
         assert config['short'] == 12.12321
 
         assert config['long1'] == 121.22E3423432
@@ -2037,7 +2037,7 @@ class TestConfigParser(object):
         )
 
         config5 = ConfigFactory.parse_string(
-            u"""
+            """
             longName: "long "${?name}
             """,
             resolve=False
@@ -2059,8 +2059,8 @@ class TestConfigParser(object):
             """
         )
 
-        # use unicode path here for regression testing https://github.com/chimpler/pyhocon/issues/44
-        config2 = config1.with_fallback(u'samples/aws.conf')
+        # Use a non-ASCII path here for regression testing https://github.com/chimpler/pyhocon/issues/44
+        config2 = config1.with_fallback('samples/aws.conf')
         assert config2 == {
             'data-center-generic': {'cluster-size': 8},
             'data-center-east': {'cluster-size': 8, 'name': 'east'},
@@ -2503,7 +2503,7 @@ test2 = test
         assert config.get_int('int_from_env') == 5
 
     def test_unicode_dict_key(self):
-        input_string = u"""
+        input_string = """
 www.sample.com {
     us {
         name = "first domain"
@@ -2518,20 +2518,20 @@ www.example-ö.com {
 
         config = ConfigFactory.parse_string(input_string)
 
-        assert config.get_string(u'www.sample.com.us.name') == 'first domain'
-        assert config.get_string(u'www.example-ö.com.us.name') == 'second domain'
+        assert config.get_string('www.sample.com.us.name') == 'first domain'
+        assert config.get_string('www.example-ö.com.us.name') == 'second domain'
         with pytest.raises(ConfigWrongTypeException):
-            config.put(u'www.example-ö', 'append_failure', append=True)
+            config.put('www.example-ö', 'append_failure', append=True)
         with pytest.raises(ConfigMissingException):
-            config.get_string(u'missing_unicode_key_ö')
+            config.get_string('missing_unicode_key_ö')
         with pytest.raises(ConfigException):
-            config.get_bool(u'www.example-ö.com.us.name')
+            config.get_bool('www.example-ö.com.us.name')
         with pytest.raises(ConfigException):
-            config.get_list(u'www.example-ö.com.us.name')
+            config.get_list('www.example-ö.com.us.name')
         with pytest.raises(ConfigException):
-            config.get_config(u'www.example-ö.com.us.name')
+            config.get_config('www.example-ö.com.us.name')
         with pytest.raises(ConfigWrongTypeException):
-            config.get_string(u'www.example-ö.com.us.name.missing')
+            config.get_string('www.example-ö.com.us.name.missing')
 
     def test_with_comment_on_last_line(self):
         # Address issue #102
