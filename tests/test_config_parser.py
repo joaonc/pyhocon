@@ -20,7 +20,7 @@ from pyhocon.exceptions import (ConfigException, ConfigMissingException,
 
 try:
     from dateutil.relativedelta import relativedelta as period
-except Exception:
+except ImportError:
     from datetime import timedelta as period
 
 class TestConfigParser(object):
@@ -2693,28 +2693,20 @@ www.example-ö.com {
         assert config['foo'] == 'bar'
 
 
-try:
-    from dateutil.relativedelta import relativedelta
+@pytest.mark.parametrize('hocon_str,rd_kwargs', [
+    ('a: 1 months', {'months': 1}),
+    ('a: 1months', {'months': 1}),
+    ('a: 2 month', {'months': 2}),
+    ('a: 3 mo', {'months': 3}),
+    ('a: 3mo', {'months': 3}),
 
-
-    @pytest.mark.parametrize('data_set', [
-        ('a: 1 months', relativedelta(months=1)),
-        ('a: 1months', relativedelta(months=1)),
-        ('a: 2 month', relativedelta(months=2)),
-        ('a: 3 mo', relativedelta(months=3)),
-        ('a: 3mo', relativedelta(months=3)),
-        ('a: 3 mon', '3 mon'),
-
-        ('a: 1 years', relativedelta(years=1)),
-        ('a: 1years', relativedelta(years=1)),
-        ('a: 2 year', relativedelta(years=2)),
-        ('a: 3 y', relativedelta(years=3)),
-        ('a: 3y', relativedelta(years=3)),
-
-    ])
-    def test_parse_string_with_duration_optional_units(data_set):
-        config = ConfigFactory.parse_string(data_set[0])
-
-        assert config['a'] == data_set[1]
-except ImportError:
-    pass
+    ('a: 1 years', {'years': 1}),
+    ('a: 1years', {'years': 1}),
+    ('a: 2 year', {'years': 2}),
+    ('a: 3 y', {'years': 3}),
+    ('a: 3y', {'years': 3}),
+])
+def test_parse_string_with_duration_optional_units(hocon_str, rd_kwargs):
+    rd = pytest.importorskip('dateutil.relativedelta')
+    config = ConfigFactory.parse_string(hocon_str)
+    assert config['a'] == rd.relativedelta(**rd_kwargs)

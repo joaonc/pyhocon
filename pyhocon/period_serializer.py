@@ -2,7 +2,7 @@ from datetime import timedelta
 
 try:
     from dateutil.relativedelta import relativedelta
-except Exception:
+except ImportError:
     relativedelta = None
 
 

@@ -12,7 +12,7 @@ from pyhocon.period_serializer import timedelta_to_str, is_timedelta_like, timed
 
 try:
     from dateutil.relativedelta import relativedelta
-except Exception:
+except ImportError:
     relativedelta = None
 
 

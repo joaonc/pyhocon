@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 from datetime import timedelta
 
+import pytest
+
 from pyhocon import ConfigTree
 from pyhocon.converter import HOCONConverter
 
@@ -116,15 +118,13 @@ class TestConverterToHocon(object):
             assert expected_result == to_hocon({'td': time_delta})
 
     def test_format_relativedelta(self):
-        try:
-            from dateutil.relativedelta import relativedelta
-        except Exception:
-            return
-
-        for time_delta, expected_result in ((relativedelta(seconds=0), 'td = 0 seconds'),
-                                            (relativedelta(hours=0), 'td = 0 seconds'),
-                                            (relativedelta(days=5), 'td = 5 days'),
-                                            (relativedelta(weeks=3), 'td = 21 days'),
-                                            (relativedelta(hours=2), 'td = 2 hours'),
-                                            (relativedelta(minutes=43), 'td = 43 minutes'),):
+        rd = pytest.importorskip('dateutil.relativedelta')
+        for time_delta, expected_result in (
+            (rd.relativedelta(seconds=0), 'td = 0 seconds'),
+            (rd.relativedelta(hours=0), 'td = 0 seconds'),
+            (rd.relativedelta(days=5), 'td = 5 days'),
+            (rd.relativedelta(weeks=3), 'td = 21 days'),
+            (rd.relativedelta(hours=2), 'td = 2 hours'),
+            (rd.relativedelta(minutes=43), 'td = 43 minutes'),
+        ):
             assert expected_result == to_hocon({'td': time_delta})

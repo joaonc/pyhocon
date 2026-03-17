@@ -59,41 +59,36 @@ def test_parse_string_with_duration(data_set):
     assert config == data_set[1]
 
 
-try:
-    from dateutil.relativedelta import relativedelta
+@pytest.mark.parametrize('hocon_str,rd_kwargs', [
+    ('1 months', {'months': 1}),
+    ('1months', {'months': 1}),
+    ('2 month', {'months': 2}),
+    ('3 mo', {'months': 3}),
+    ('3mo', {'months': 3}),
+
+    ('1 years', {'years': 1}),
+    ('1years', {'years': 1}),
+    ('2 year', {'years': 2}),
+    ('3 y', {'years': 3}),
+    ('3y', {'years': 3}),
+])
+def test_parse_string_with_duration_optional_units(hocon_str, rd_kwargs):
+    rd = pytest.importorskip('dateutil.relativedelta')
+    parsed = parse_period(hocon_str)
+    assert parsed == rd.relativedelta(**rd_kwargs)
 
 
-    @pytest.mark.parametrize('data_set', [
-        ('1 months', relativedelta(months=1)),
-        ('1months', relativedelta(months=1)),
-        ('2 month', relativedelta(months=2)),
-        ('3 mo', relativedelta(months=3)),
-        ('3mo', relativedelta(months=3)),
-
-        ('1 years', relativedelta(years=1)),
-        ('1years', relativedelta(years=1)),
-        ('2 year', relativedelta(years=2)),
-        ('3 y', relativedelta(years=3)),
-        ('3y', relativedelta(years=3)),
-
-    ])
-    def test_parse_string_with_duration_optional_units(data_set):
-        parsed = parse_period(data_set[0])
-
-        assert parsed == data_set[1]
-
-
-    def test_format_relativedelta():
-
-        for time_delta, expected_result in ((relativedelta(seconds=0), '0 seconds'),
-                                            (relativedelta(hours=0), '0 seconds'),
-                                            (relativedelta(days=5), '5 days'),
-                                            (relativedelta(weeks=3), '21 days'),
-                                            (relativedelta(hours=2), '2 hours'),
-                                            (relativedelta(minutes=43), '43 minutes'),):
-            assert expected_result == timedelta_to_hocon(time_delta)
-except ImportError:
-    pass
+def test_format_relativedelta():
+    rd = pytest.importorskip('dateutil.relativedelta')
+    for time_delta, expected_result in (
+        (rd.relativedelta(seconds=0), '0 seconds'),
+        (rd.relativedelta(hours=0), '0 seconds'),
+        (rd.relativedelta(days=5), '5 days'),
+        (rd.relativedelta(weeks=3), '21 days'),
+        (rd.relativedelta(hours=2), '2 hours'),
+        (rd.relativedelta(minutes=43), '43 minutes'),
+    ):
+        assert expected_result == timedelta_to_hocon(time_delta)
 
 
 def test_format_time_delta():
