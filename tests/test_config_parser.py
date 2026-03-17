@@ -989,7 +989,7 @@ class TestConfigParser(object):
         )
         assert config.get("x.y") == {'z': 1}
         assert config.get("x.z") == 1
-        assert set(config.get("x").keys()) == set(['y', 'z'])
+        assert set(config.get("x").keys()) == {'y', 'z'}
 
     def test_self_ref_substitution_dict_path_hide(self):
         config = ConfigFactory.parse_string(
@@ -999,7 +999,7 @@ class TestConfigParser(object):
             """
         )
         assert config.get("x.y") == 1
-        assert set(config.get("x").keys()) == set(['y'])
+        assert set(config.get("x").keys()) == {'y'}
 
     def test_self_ref_substitution_dict_recurse(self):
         with pytest.raises(ConfigSubstitutionException):
@@ -1030,7 +1030,7 @@ class TestConfigParser(object):
             """
         )
         assert config.get('foo') == {'a': 2, 'c': 1}
-        assert set(config.keys()) == set(['foo'])
+        assert set(config.keys()) == {'foo'}
 
     def test_self_ref_substitution_dict_other_field(self):
         """
@@ -1045,7 +1045,7 @@ class TestConfigParser(object):
             """
         )
         assert config.get("bar") == {'foo': 42, 'baz': 42}
-        assert set(config.keys()) == set(['bar'])
+        assert set(config.keys()) == {'bar'}
 
     def test_self_ref_substitution_dict_other_field_merged_in(self):
         """
@@ -1061,7 +1061,7 @@ class TestConfigParser(object):
             """
         )
         assert config.get("bar") == {'foo': 43, 'baz': 43}
-        assert set(config.keys()) == set(['bar'])
+        assert set(config.keys()) == {'bar'}
 
     def test_self_ref_substitution_dict_other_field_merged_in_mutual(self):
         """
@@ -1079,7 +1079,7 @@ class TestConfigParser(object):
         )
         assert config.get("bar") == {'a': 4, 'b': 3}
         assert config.get("foo") == {'c': 3, 'd': 4}
-        assert set(config.keys()) == set(['bar', 'foo'])
+        assert set(config.keys()) == {'bar', 'foo'}
 
     def test_self_ref_substitution_string_opt_concat(self):
         """
@@ -1091,7 +1091,7 @@ class TestConfigParser(object):
             """
         )
         assert config.get("a") == 'foo'
-        assert set(config.keys()) == set(['a'])
+        assert set(config.keys()) == {'a'}
 
     def test_self_ref_substitution_dict_recurse_part(self):
         with pytest.raises(ConfigSubstitutionException):
