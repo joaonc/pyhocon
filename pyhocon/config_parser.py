@@ -21,53 +21,18 @@ from pyhocon.config_tree import (ConfigInclude, ConfigList, ConfigQuotedString,
 from pyhocon.exceptions import (ConfigException, ConfigMissingException,
                                 ConfigSubstitutionException)
 
-use_urllib2 = False
-try:
-    # For Python 3.0 and later
-    from urllib.request import urlopen
-    from urllib.error import HTTPError, URLError
-except ImportError:  # pragma: no cover
-    # Fall back to Python 2's urllib2
-    from urllib2 import urlopen, HTTPError, URLError
-
-    use_urllib2 = True
-try:
-    basestring
-except NameError:  # pragma: no cover
-    basestring = str
-    unicode = str
-
-if sys.version_info < (3, 5):
-    def glob(pathname, recursive=False):
-        if recursive and '**' in pathname:
-            import warnings
-            warnings.warn('This version of python (%s) does not support recursive import' % sys.version)
-        from glob import glob as _glob
-        return _glob(pathname)
-else:
-    from glob import glob
-
-# Fix deprecated warning with 'imp' library and Python 3.4+.
-# See: https://github.com/chimpler/pyhocon/issues/248
-if sys.version_info >= (3, 4):
-    import importlib.util
+from urllib.request import urlopen
+from urllib.error import HTTPError, URLError
+from glob import glob
+import importlib.util
 
 
-    def find_package_dirs(name):
-        spec = importlib.util.find_spec(name)
-        # When `imp.find_module()` cannot find a package it raises ImportError.
-        # Here we should simulate it to keep the compatibility with older
-        # versions.
-        if not spec:
-            raise ImportError('No module named {!r}'.format(name))
-        return spec.submodule_search_locations
-else:
-    import imp
-    import importlib
-
-
-    def find_package_dirs(name):
-        return [imp.find_module(name)[1]]
+def find_package_dirs(name):
+    spec = importlib.util.find_spec(name)
+    # When the module cannot be found, raise ImportError to signal missing package.
+    if not spec:
+        raise ImportError('No module named {!r}'.format(name))
+    return spec.submodule_search_locations
 
 logger = logging.getLogger(__name__)
 
@@ -93,11 +58,8 @@ class STR_SUBSTITUTION(object):
     pass
 
 
-U_KEY_SEP = unicode('.')
-U_KEY_FMT = unicode('"{0}"')
-
-U_KEY_SEP = unicode('.')
-U_KEY_FMT = unicode('"{0}"')
+U_KEY_SEP = '.'
+U_KEY_FMT = '"{0}"'
 
 
 class ConfigFactory(object):
@@ -150,7 +112,7 @@ class ConfigFactory(object):
 
         try:
             with contextlib.closing(urlopen(url, timeout=socket_timeout)) as fd:
-                content = fd.read() if use_urllib2 else fd.read().decode('utf-8')
+                content = fd.read().decode('utf-8')
                 return cls.parse_string(content, os.path.dirname(url), resolve, unresolved_value)
         except (HTTPError, URLError) as e:
             logger.warning('Cannot include url %s. Resource is inaccessible.', url)
@@ -807,7 +769,7 @@ class ConfigTreeParser(TokenConverter):
                     if isinstance(value, list) and operator == "+=":
                         value = ConfigValues([ConfigSubstitution(key, True, '', False, loc), value], False, loc)
                         config_tree.put(key, value, False)
-                    elif isinstance(value, unicode) and operator == "+=":
+                    elif isinstance(value, str) and operator == "+=":
                         value = ConfigValues([ConfigSubstitution(key, True, '', True, loc), ' ' + value], True, loc)
                         config_tree.put(key, value, False)
                     elif isinstance(value, list):

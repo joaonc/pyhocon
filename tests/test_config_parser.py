@@ -7,14 +7,9 @@ import tempfile
 from collections import OrderedDict
 from datetime import timedelta
 
-try:
-    # Python 3
-    from urllib.request import pathname2url
-except ImportError:
-    # Python 2
-    from urllib import pathname2url
+from urllib.request import pathname2url
 
-import mock
+from unittest import mock
 import pytest
 from pyparsing import ParseBaseException, ParseException, ParseSyntaxException
 

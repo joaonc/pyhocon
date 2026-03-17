@@ -4,12 +4,6 @@ import re
 import copy
 from pyhocon.exceptions import ConfigException, ConfigWrongTypeException, ConfigMissingException
 
-try:
-    basestring
-except NameError:  # pragma: no cover
-    basestring = str
-    unicode = str
-
 
 class UndefinedKey(object):
     pass
@@ -249,7 +243,7 @@ class ConfigTree(OrderedDict):
         if value is None:
             return None
 
-        string_value = unicode(value)
+        string_value = str(value)
         if isinstance(value, bool):
             string_value = string_value.lower()
         return string_value
@@ -395,13 +389,8 @@ class ConfigTree(OrderedDict):
             raise KeyError(item)
         return val
 
-    try:
-        from collections import _OrderedDictItemsView
-    except ImportError:  # pragma: nocover
-        pass
-    else:
-        def items(self):  # pragma: nocover
-            return self._OrderedDictItemsView(self)
+    def items(self):
+        return [(k, None if isinstance(v, NoneValue) else v) for k, v in super(ConfigTree, self).items()]
 
     def __getattr__(self, item):
         val = self.get(item, NonExistentKey)
@@ -522,7 +511,7 @@ class ConfigValues(object):
             if isinstance(v, ConfigQuotedString):
                 return v.value + ('' if last else v.ws)
             else:
-                return '' if v is None else unicode(v)
+                return '' if v is None else str(v)
 
         if self.has_substitution():
             return self
@@ -618,7 +607,7 @@ class ConfigSubstitution(object):
         return '[ConfigSubstitution: ' + self.variable + ']'
 
 
-class ConfigUnquotedString(unicode):
+class ConfigUnquotedString(str):
     def __new__(cls, value):
         return super(ConfigUnquotedString, cls).__new__(cls, value)
 
