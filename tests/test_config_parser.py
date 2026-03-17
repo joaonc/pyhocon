@@ -2296,13 +2296,14 @@ test2 = test
         assert config == d
 
     def test_from_dict_with_nested_dict(self):
-        d = OrderedDict()
-        d['banana'] = 3
-        d['apple'] = 4
-        d['pear'] = 1
-        d['tree'] = {
-            'a': 'abc\ntest\n',
-            'b': [1, 2, 3]
+        d = {
+            'banana': 3,
+            'apple': 4,
+            'pear': 1,
+            'tree': {
+                'a': 'abc\ntest\n',
+                'b': [1, 2, 3],
+            },
         }
         config = ConfigFactory.from_dict(d)
         assert config == d
@@ -2350,7 +2351,7 @@ test2 = test
         assert config.get_list('sub.baz') == ["a", "b"]
         assert config.get_list('sub2.baz') == ["a", "b"]
 
-    def test_plain_ordered_dict(self):
+    def test_plain_dict(self):
         config = ConfigFactory.parse_string(
             """
             e : ${a} {
@@ -2359,7 +2360,7 @@ test2 = test
             resolve=False
         )
         with pytest.raises(ConfigException):
-            config.as_plain_ordered_dict()
+            config.as_plain_dict()
 
     def test_quoted_strings_with_ws(self):
         config = ConfigFactory.parse_string(

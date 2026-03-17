@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from pyparsing import col, lineno
 import re
 import copy
@@ -17,7 +16,7 @@ class NoneValue(object):
     pass
 
 
-class ConfigTree(OrderedDict):
+class ConfigTree(dict):
     KEY_SEP = '.'
 
     def __init__(self, *args, **kwds):
@@ -389,6 +388,10 @@ class ConfigTree(OrderedDict):
             raise KeyError(item)
         return val
 
+    def copy(self):
+        # dict.copy() returns a plain dict; we need to preserve the ConfigTree subclass type.
+        return self.__class__(self)
+
     def items(self):
         return [(k, None if isinstance(v, NoneValue) else v) for k, v in super(ConfigTree, self).items()]
 
@@ -419,29 +422,33 @@ class ConfigTree(OrderedDict):
             ConfigParser.resolve_substitutions(result)
         return result
 
-    def as_plain_ordered_dict(self):
-        """return a deep copy of this config as a plain OrderedDict
+    def as_plain_dict(self):
+        """Return a deep copy of this config as a plain dict.
 
         The config tree should be fully resolved.
 
         This is useful to get an object with no special semantics such as path expansion for the keys.
-        In particular this means that keys that contain dots are not surrounded with '"' in the plain OrderedDict.
+        In particular this means that keys that contain dots are not surrounded with '"' in the plain dict.
 
-        :return: this config as an OrderedDict
-        :type return: OrderedDict
+        :return: this config as a dict
+        :rtype: dict
         """
 
         def plain_value(v):
             if isinstance(v, list):
                 return [plain_value(e) for e in v]
             elif isinstance(v, ConfigTree):
-                return v.as_plain_ordered_dict()
+                return v.as_plain_dict()
             else:
                 if isinstance(v, ConfigValues):
-                    raise ConfigException("The config tree contains unresolved elements")
+                    raise ConfigException('The config tree contains unresolved elements')
                 return v
 
-        return OrderedDict((key.strip('"'), plain_value(value)) for key, value in self.items())
+        return dict((key.strip('"'), plain_value(value)) for key, value in self.items())
+
+    def as_plain_ordered_dict(self):
+        """Deprecated: use as_plain_dict() instead."""
+        return self.as_plain_dict()
 
 
 class ConfigList(list):

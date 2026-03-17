@@ -5,7 +5,6 @@ import logging
 import os
 import re
 import socket
-import sys
 
 from pyparsing import (Forward, Group, Keyword, Literal, Optional,
                        ParserElement, ParseSyntaxException, QuotedString,
